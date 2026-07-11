@@ -25,6 +25,7 @@ Log companies and applications, update their status changes and information, add
 ![bulk_update_demo](.github/assets/bulk_update_demo.gif)</details>
 
 **📊 Visual cues and dashboard**
+
 **Highlight** active applications with a toggle to help navigate through the list
 ![highlight_demo](.github/assets/highlight_demo.gif)
 
