@@ -35,6 +35,7 @@ The dashboard panel includes a **funnel chart** showing how applications move th
 Load your data through a guided import wizard with column mapping and a preview before saving.
 <details>
 <summary>▶️ See it in action</summary>
+
 ![import demo](.github/assets/import_demo.gif)</details>
 
 **🔗 Application link update**
