@@ -37,7 +37,11 @@ def get_sankey(session: Session) -> SankeyData:
         for from_s, to_s in zip(chain, chain[1:]):
             link_counts[(from_s, to_s)] += 1
 
-    nodes = [SankeyNode(id=n, name=n) for n in sorted(node_names)]
+    status_order = {s.name: s.sort_order for s in session.exec(select(Status)).all()}
+    nodes = [
+        SankeyNode(id=n, name=n)
+        for n in sorted(node_names, key=lambda n: status_order.get(n, 999))
+    ]
     links = [
         SankeyLink(source=from_s, target=to_s, value=count)
         for (from_s, to_s), count in sorted(link_counts.items())

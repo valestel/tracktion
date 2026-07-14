@@ -78,6 +78,16 @@ def test_sankey_waiting_round_trip_yields_no_link(session: Session, sample_compa
     assert sankey.links == []
 
 
+def test_sankey_nodes_ordered_by_sort_order(session: Session, sample_company):
+    _seed_statuses(session)
+    app = _make_app(session, sample_company, "SWE")
+    application_service.update(session, app.id, ApplicationUpdate(status="offer"))
+
+    sankey = analytics_service.get_sankey(session)
+    names = [n.name for n in sankey.nodes]
+    assert names.index("applied") < names.index("offer")
+
+
 def test_funnel_counts_waiting_app_under_last_real_status(session: Session, sample_company):
     _seed_statuses(session)
     app = _make_app(session, sample_company, "SWE")
