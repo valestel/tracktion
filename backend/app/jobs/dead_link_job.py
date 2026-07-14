@@ -100,12 +100,11 @@ def _record_run(session: Session) -> None:
 
 
 async def scheduler_loop() -> None:
-    logger.info(
-        "Dead-link scheduler started: runs every %d day(s), due-check every %d s",
-        settings.link_check_interval_days,
-        settings.link_check_poll_seconds,
-    )
-    # Let startup logs settle before the first due-check.
+    # logger.info(
+    #     "Dead-link scheduler started: runs every %d day(s), due-check every %d s",
+    #     settings.link_check_interval_days,
+    #     settings.link_check_poll_seconds,
+    # )
     await asyncio.sleep(10)
     while True:
         try:
