@@ -1,8 +1,10 @@
 from typing import Optional
 
+from sqlalchemy import func
 from sqlmodel import Session, select
 
 from app.models.application import Application
+from app.models.status_event import StatusEvent
 
 
 def get(session: Session, app_id: int) -> Optional[Application]:
@@ -15,6 +17,8 @@ def list_all(
     include_archived: bool = False,
     company_id: Optional[int] = None,
     status: Optional[str] = None,
+    ever_status: Optional[list[str]] = None,
+    ever_status_match_all: bool = False,
 ) -> list[Application]:
     stmt = select(Application)
     if not include_archived:
@@ -23,6 +27,13 @@ def list_all(
         stmt = stmt.where(Application.company_id == company_id)
     if status is not None:
         stmt = stmt.where(Application.status == status)
+    if ever_status:
+        subq = select(StatusEvent.application_id).where(StatusEvent.to_status.in_(ever_status))
+        if ever_status_match_all:
+            subq = subq.group_by(StatusEvent.application_id).having(
+                func.count(func.distinct(StatusEvent.to_status)) == len(ever_status)
+            )
+        stmt = stmt.where(Application.id.in_(subq))  # type: ignore[union-attr]
     stmt = stmt.order_by(Application.application_date.desc(), Application.created_at.desc())  # type: ignore[union-attr]
     return list(session.exec(stmt).all())
 

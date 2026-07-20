@@ -15,6 +15,8 @@ interface Filters {
   status?: string;
   company_id?: number;
   include_archived?: boolean;
+  ever_status?: string[];
+  ever_status_match_all?: boolean;
 }
 
 export function useApplications(filters: Filters = {}) {

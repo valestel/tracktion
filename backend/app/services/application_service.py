@@ -70,9 +70,16 @@ def list_all(
     include_archived: bool = False,
     company_id: int | None = None,
     status: str | None = None,
+    ever_status: list[str] | None = None,
+    ever_status_match_all: bool = False,
 ) -> list[ApplicationRead]:
     apps = application_repo.list_all(
-        session, include_archived=include_archived, company_id=company_id, status=status
+        session,
+        include_archived=include_archived,
+        company_id=company_id,
+        status=status,
+        ever_status=ever_status,
+        ever_status_match_all=ever_status_match_all,
     )
     return [_to_read(a) for a in apps]
 

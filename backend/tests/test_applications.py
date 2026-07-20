@@ -149,6 +149,58 @@ def test_archived_excluded_from_default_list(session: Session, sample_applicatio
     assert all(a.id != sample_application.id for a in apps)
 
 
+def test_ever_status_includes_apps_that_moved_on(session: Session, sample_application):
+    application_service.update(
+        session, sample_application.id, ApplicationUpdate(status="take-home task")
+    )
+    application_service.update(
+        session, sample_application.id, ApplicationUpdate(status="rejected")
+    )
+
+    apps = application_service.list_all(session, ever_status=["take-home task"])
+    assert any(a.id == sample_application.id for a in apps)
+    assert all(a.status != "take-home task" for a in apps)
+
+
+def test_ever_status_excludes_apps_that_never_had_it(session: Session, sample_application):
+    apps = application_service.list_all(session, ever_status=["take-home task"])
+    assert all(a.id != sample_application.id for a in apps)
+
+
+def test_ever_status_match_all_requires_every_selected_status(
+    session: Session, sample_company
+):
+    data = ApplicationCreate(
+        company_id=sample_company.id,
+        job_title="Only take-home",
+        application_date=date(2026, 3, 1),
+        status="applied",
+    )
+    only_take_home = application_service.create(session, data)
+    application_service.update(
+        session, only_take_home.id, ApplicationUpdate(status="take-home task")
+    )
+
+    data = ApplicationCreate(
+        company_id=sample_company.id,
+        job_title="Both statuses",
+        application_date=date(2026, 3, 2),
+        status="applied",
+    )
+    both = application_service.create(session, data)
+    application_service.update(session, both.id, ApplicationUpdate(status="take-home task"))
+    application_service.update(session, both.id, ApplicationUpdate(status="offer"))
+
+    apps = application_service.list_all(
+        session,
+        ever_status=["take-home task", "offer"],
+        ever_status_match_all=True,
+    )
+    ids = {a.id for a in apps}
+    assert both.id in ids
+    assert only_take_home.id not in ids
+
+
 def test_get_nonexistent_raises_not_found(session: Session):
     with pytest.raises(NotFoundError):
         application_service.get(session, 99999)

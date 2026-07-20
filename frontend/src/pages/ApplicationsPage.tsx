@@ -15,6 +15,8 @@ import type { ApplicationRead } from "../types";
 
 export function ApplicationsPage() {
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [everStatuses, setEverStatuses] = useState<string[]>([]);
+  const [matchAllEverStatuses, setMatchAllEverStatuses] = useState(false);
   const [includeArchived, setIncludeArchived] = useState(false);
   const [highlightRecent, setHighlightRecent] = useState<boolean>(
     () => localStorage.getItem("highlightRecent") !== "false"
@@ -32,6 +34,8 @@ export function ApplicationsPage() {
 
   const { data: fetchedApplications = [], isLoading } = useApplications({
     include_archived: includeArchived,
+    ever_status: everStatuses,
+    ever_status_match_all: matchAllEverStatuses,
   });
 
   const applications =
@@ -74,6 +78,22 @@ export function ApplicationsPage() {
             selection.clear();
           }}
         />
+        <StatusFilterDropdown
+          statuses={statuses}
+          selected={everStatuses}
+          onChange={(next) => {
+            setEverStatuses(next);
+            selection.clear();
+          }}
+          prefix="Ever had"
+        />
+        {everStatuses.length > 1 && (
+          <Toggle
+            checked={matchAllEverStatuses}
+            onChange={setMatchAllEverStatuses}
+            label="Match all selected"
+          />
+        )}
         <Toggle
           checked={highlightRecent}
           onChange={setHighlightRecent}

@@ -5,12 +5,14 @@ interface StatusFilterDropdownProps {
   statuses: Status[];
   selected: string[];
   onChange: (statuses: string[]) => void;
+  prefix?: string;
 }
 
 export function StatusFilterDropdown({
   statuses,
   selected,
   onChange,
+  prefix,
 }: StatusFilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -44,6 +46,7 @@ export function StatusFilterDropdown({
         className={`filter-tab dropdown-trigger ${selected.length > 0 ? "active" : ""}`}
         onClick={() => setOpen((o) => !o)}
       >
+        {prefix ? `${prefix}: ` : ""}
         {label} ▾
       </button>
       {open && (

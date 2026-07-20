@@ -5,6 +5,8 @@ interface ListParams {
   status?: string;
   company_id?: number;
   include_archived?: boolean;
+  ever_status?: string[];
+  ever_status_match_all?: boolean;
 }
 
 export function listApplications(params: ListParams = {}): Promise<ApplicationRead[]> {
@@ -12,6 +14,8 @@ export function listApplications(params: ListParams = {}): Promise<ApplicationRe
   if (params.status) qs.set("status", params.status);
   if (params.company_id) qs.set("company_id", String(params.company_id));
   if (params.include_archived) qs.set("include_archived", "true");
+  params.ever_status?.forEach((s) => qs.append("ever_status", s));
+  if (params.ever_status_match_all) qs.set("ever_status_match_all", "true");
   const query = qs.toString();
   return get<ApplicationRead[]>(`/applications${query ? `?${query}` : ""}`);
 }

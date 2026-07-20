@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 
 from app.api.deps import SessionDep
 from app.schemas.application import (
@@ -21,9 +21,16 @@ def list_applications(
     status: Optional[str] = None,
     company_id: Optional[int] = None,
     include_archived: bool = False,
+    ever_status: Optional[list[str]] = Query(None),
+    ever_status_match_all: bool = False,
 ):
     return application_service.list_all(
-        session, include_archived=include_archived, company_id=company_id, status=status
+        session,
+        include_archived=include_archived,
+        company_id=company_id,
+        status=status,
+        ever_status=ever_status,
+        ever_status_match_all=ever_status_match_all,
     )
 
 
